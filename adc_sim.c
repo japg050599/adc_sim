@@ -37,7 +37,8 @@
 // --- Enumeração para o Estado do Canal ADC ---
 typedef enum {
     ADC_CHANNEL_STATE_DISABLED,
-    ADC_CHANNEL_STATE_NORMAL
+    ADC_CHANNEL_STATE_NORMAL,
+    ADC_CHANNEL_STATE_ALERT
 } AdcChannelState_t;
 
 // --- Estrutura (Struct) para o Canal ADC ---
@@ -47,6 +48,7 @@ typedef struct {
     unsigned int      filteredValueADC;           // Valor filtrado (contagens ADC)
     float             filteredVoltage;             // Valor filtrado em Volts
     AdcChannelState_t state;                      // Estado atual do canal
+    unsigned int      limit;
 } AdcChannel_t;
 
 // --- Variável Global Única (apenas um canal) ---
@@ -115,7 +117,14 @@ void processAdcChannel(AdcChannel_t *pChannel)
     pChannel->filteredVoltage = convertADCToVoltage(pChannel->filteredValueADC);
 
     //5. Aqui deverá ser incluída a lógica de detecção de limiar excedido
+    if(pChannel->filteredValueADC > pChannel->limit)
+    {
+        pChannel->state = ADC_CHANNEL_STATE_ALERT;
+    }else {
     pChannel->state = ADC_CHANNEL_STATE_NORMAL;
+    }
+    //pChannel->state = ADC_CHANNEL_STATE_NORMAL;
+
 
 }
 
